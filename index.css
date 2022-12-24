@@ -1,0 +1,36 @@
+#board caption {
+    text-align: center;
+    font-weight: bold;
+    font-size: xx-large;
+}
+
+#board,
+#scores {
+    margin: 0 auto;
+}
+
+#board td {
+    border: 3px solid black;
+    text-align: center;
+}
+
+#board td,
+img {
+    --cell-size: 8vmin;
+    width: clamp(30px, var(--cell-size), 50px);
+    height: clamp(30px, var(--cell-size), 50px);
+}
+
+p {
+    text-align: center;
+}
+
+input {
+    width: 50px;
+}
+
+img {
+    vertical-align: middle;
+    position: relative;
+    animation-fill-mode: backwards;
+}
