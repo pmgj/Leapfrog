@@ -17,7 +17,6 @@ class GUI {
         let board = this.game.getBoard();
         this.printBoard(board);
         this.changeMessage();
-        window.ondblclick = this.endPath.bind(this);
         this.updateScore();
     }
     printBoard(board) {
@@ -40,28 +39,34 @@ class GUI {
     }
     play(evt) {
         let td = evt.currentTarget;
-        this.path.push(this.coordinates(td));
+        let cell = this.coordinates(td);
+        if(this.path.length > 0 && this.path[this.path.length - 1].equals(cell)) {
+            this.endPath();
+        } else {
+            this.path.push(cell);
+        }
     }
     async endPath() {
         try {
             let mr = this.game.move(this.path);
             const time = 1000;
-            for (let i = 1; i < this.path.length; i++) {
-                let { x: or, y: oc } = this.path[i - 1];
-                let { x: dr, y: dc } = this.path[i];
+            let temp = this.path;
+            for (let i = 1; i < temp.length; i++) {
+                let { x: or, y: oc } = temp[i - 1];
+                let { x: dr, y: dc } = temp[i];
                 await new Promise(resolve => {
                     let middleImage = document.querySelector(`tr:nth-child(${(or + dr) / 2 + 1}) td:nth-child(${(oc + dc) / 2 + 1}) img`);
                     let anim = middleImage.animate([{ opacity: 1 }, { opacity: 0 }], time);
                     anim.onfinish = () => middleImage.parentNode.removeChild(middleImage);
                     let image = document.querySelector(`tr:nth-child(${or + 1}) td:nth-child(${oc + 1}) img`);
                     let moveImage = () => {
-                        this.getTableData(this.path[i]).appendChild(image);
+                        this.getTableData(temp[i]).appendChild(image);
                         resolve(true);
                     };
                     let td = document.querySelector("td");
                     let size = td.offsetWidth;
-                    anim = image.animate([{ top: 0, left: 0 }, { top: `${(dr - or) * size}px`, left: `${(dc - oc) * size}px` }], time);
-                    anim.onfinish = moveImage;
+                    let anim2 = image.animate([{ top: 0, left: 0 }, { top: `${(dr - or) * size}px`, left: `${(dc - oc) * size}px` }], time);
+                    anim2.onfinish = moveImage;
                 });
             }
             this.changeMessage(mr);
@@ -83,7 +88,7 @@ class GUI {
         return new Cell(cell.parentNode.rowIndex, cell.cellIndex);
     }
     getTableData({ x, y }) {
-        let table = document.querySelector("table");
+        let table = document.querySelector("#board");
         return table.rows[x].cells[y];
     }
     changeMessage(m) {

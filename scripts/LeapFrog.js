@@ -22,7 +22,7 @@ export default class LeapFrog {
             throw new Error("Path is invalid.");
         }
         let pm = this.possibleMoves(beginCell);
-        if (!pm.some(p => p.some(value => value.equals(endCell)))) {
+        if (!pm.some(p => this.containsSequence(path, p))) {
             throw new Error("Invalid move.");
         }
         this.board[endCell.x][endCell.y] = this.board[beginCell.x][beginCell.y];
@@ -35,6 +35,17 @@ export default class LeapFrog {
         }
         this.turn = this.turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
         return this.endOfGame();
+    }
+    containsSequence(path, move) {
+        if(path.length - 1 > move.length) {
+            return false;
+        }
+        for (let i = 1; i < path.length; i++) {
+            if(!path[i].equals(move[i - 1])) {
+                return false;
+            }
+        }
+        return true;
     }
     endOfGame() {
         return this.endOfGameStrategy.condition();
