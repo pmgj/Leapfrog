@@ -1,8 +1,9 @@
 import CellState from "./CellState.js";
 import Player from "./Player.js";
-// import MurrayBoard from "./boards/MurrayBoard.js";
 import TraditionalBoard from "./boards/TraditionalBoard.js";
 import Cell from "./Cell.js";
+import SumNumberOfPieces from "./updateScores/SumNumberOfPieces.js";
+import HighestPiece from "./endOfGame/HighestPiece.js";
 
 export default class LeapFrog {
     constructor(rows, cols) {
@@ -10,25 +11,47 @@ export default class LeapFrog {
         this.cols = cols;
         this.board = new TraditionalBoard().createBoard(rows, cols);
         this.turn = Player.PLAYER1;
+        this.scores = { "PLAYER1": 0, "PLAYER2": 0 };
+        this.updateScoresStrategy = new SumNumberOfPieces(this);
+        this.endOfGameStrategy = new HighestPiece(this);
     }
-    move(beginCell, endCell) {
-        if (!beginCell || !endCell) {
-            throw new Error("Origin or destination is undefined.");
+    move(path) {
+        let beginCell = path[0];
+        let endCell = path[path.length - 1];
+        if (path.some(c => !(c instanceof Cell) || !this.onBoard(c))) {
+            throw new Error("Path is invalid.");
         }
-        if (beginCell.equals(endCell)) {
-            throw new Error("Origin and destination must be different.");
+        let pm = this.possibleMoves(beginCell);
+        if (!pm.some(p => p.some(value => value.equals(endCell)))) {
+            throw new Error("Invalid move.");
         }
-        if (!this.onBoard(beginCell) || !this.onBoard(endCell)) {
-            throw new Error("Origin or destination is not on board.");
+        this.board[endCell.x][endCell.y] = this.board[beginCell.x][beginCell.y];
+        this.board[beginCell.x][beginCell.y] = CellState.EMPTY;
+        for (let i = 1; i < path.length; i++) {
+            const { x: or, y: oc } = path[i - 1];
+            const { x: dr, y: dc } = path[i];
+            this.board[(or + dr) / 2][(oc + dc) / 2] = CellState.EMPTY;
+            this.updateScoresStrategy.updateScore();
         }
-        let { x: or, y: oc } = beginCell;
-        let { x: dr, y: dc } = endCell;
-        if (this.board[or][oc] === CellState.EMPTY) {
-            throw new Error("Origin must not be empty.");
+        this.turn = this.turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
+        return this.endOfGame();
+    }
+    endOfGame() {
+        return this.endOfGameStrategy.condition();
+    }
+    canPlay(player) {
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                let piece = this.board[i][j];
+                if (piece === player) {
+                    let pm = this.possibleMoves(new Cell(i, j));
+                    if (pm.length > 0) {
+                        return true;
+                    }
+                }
+            }
         }
-        if (this.board[dr][dc] !== CellState.EMPTY) {
-            throw new Error("Destination must be empty.");
-        }
+        return false;
     }
     possibleMoves(beginCell, visitedCells = []) {
         let coords = [];
@@ -41,7 +64,7 @@ export default class LeapFrog {
             if (this.onBoard(op) && this.onBoard(empty) && this.board[c][d] !== CellState.EMPTY && this.board[a][b] === CellState.EMPTY && !visitedCells.find(c => c.equals(empty))) {
                 visitedCells.push(beginCell);
                 let p = this.possibleMoves(empty, visitedCells);
-                if(p.length !== 0) {
+                if (p.length !== 0) {
                     p.forEach(v => v.unshift(empty));
                     coords.push(...p);
                 } else {
@@ -62,6 +85,9 @@ export default class LeapFrog {
     }
     getTurn() {
         return this.turn;
+    }
+    getScores() {
+        return this.scores;
     }
     onBoard({ x, y }) {
         let inLimit = (value, limit) => value >= 0 && value < limit;

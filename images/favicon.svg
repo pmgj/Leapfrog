@@ -5,7 +5,7 @@
     <!-- <rect x="8" y="0" width="8" height="8" fill="white" stroke="black" stroke-width="1" /> -->
     <circle cx="12" cy="4" r="3" fill="red" />
     <!-- <rect x="0" y="8" width="8" height="8" fill="white" stroke="black" stroke-width="1" /> -->
-    <circle cx="4" cy="12" r="3" fill="red" />
+    <circle cx="4" cy="12" r="3" fill="green" />
     <!-- <rect x="8" y="8" width="8" height="8" fill="white" stroke="black" stroke-width="1" />     -->
-    <circle cx="12" cy="12" r="3" fill="blue" />
+    <circle cx="12" cy="12" r="3" fill="orange" />
 </svg>

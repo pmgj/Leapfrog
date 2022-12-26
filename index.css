@@ -1,11 +1,10 @@
 #board caption {
-    text-align: center;
     font-weight: bold;
     font-size: xx-large;
 }
 
 #board,
-#scores {
+#score {
     margin: 0 auto;
 }
 
@@ -33,4 +32,13 @@ img {
     vertical-align: middle;
     position: relative;
     animation-fill-mode: backwards;
+}
+
+#score caption {
+    font-weight: bold;
+    font-size: large;
+}
+
+#score td {
+    text-align: center;
 }
