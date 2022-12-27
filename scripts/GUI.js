@@ -1,6 +1,6 @@
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
-import LeapFrog from "./Leapfrog.js";
+import Murray from "./games/Murray.js";
 
 class GUI {
     constructor() {
@@ -13,7 +13,7 @@ class GUI {
         iSize.onchange = this.init.bind(this);
         iStart.onclick = this.init.bind(this);
         let size = iSize.valueAsNumber;
-        this.game = new LeapFrog(size, size);
+        this.game = new Murray(size, size);
         let board = this.game.getBoard();
         this.printBoard(board);
         this.changeMessage();
@@ -40,7 +40,7 @@ class GUI {
     play(evt) {
         let td = evt.currentTarget;
         let cell = this.coordinates(td);
-        if(this.path.length > 0 && this.path[this.path.length - 1].equals(cell)) {
+        if (this.path.length > 0 && this.path[this.path.length - 1].equals(cell)) {
             this.endPath();
         } else {
             this.path.push(cell);

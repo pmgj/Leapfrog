@@ -22,6 +22,9 @@ export default class MurrayBoard extends Board {
                 matrix[i][j] = data.shift();
             }
         }
+        let i = this.getRandomInt(0, rows);
+        let j = this.getRandomInt(0, cols);
+        matrix[i][j] = CellState.EMPTY;
         return matrix;
     }
 }

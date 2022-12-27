@@ -1,19 +1,13 @@
 import CellState from "./CellState.js";
 import Player from "./Player.js";
-import TraditionalBoard from "./boards/TraditionalBoard.js";
 import Cell from "./Cell.js";
-import SumNumberOfPieces from "./updateScores/SumNumberOfPieces.js";
-import HighestPiece from "./endOfGame/HighestPiece.js";
 
 export default class LeapFrog {
     constructor(rows, cols) {
         this.rows = rows;
         this.cols = cols;
-        this.board = new TraditionalBoard().createBoard(rows, cols);
         this.turn = Player.PLAYER1;
         this.scores = { "PLAYER1": 0, "PLAYER2": 0 };
-        this.updateScoresStrategy = new SumNumberOfPieces(this);
-        this.endOfGameStrategy = new HighestPiece(this);
     }
     move(path) {
         let beginCell = path[0];
@@ -30,8 +24,9 @@ export default class LeapFrog {
         for (let i = 1; i < path.length; i++) {
             const { x: or, y: oc } = path[i - 1];
             const { x: dr, y: dc } = path[i];
+            let capturedPiece = this.board[(or + dr) / 2][(oc + dc) / 2];
             this.board[(or + dr) / 2][(oc + dc) / 2] = CellState.EMPTY;
-            this.updateScoresStrategy.updateScore();
+            this.updateScoresStrategy.updateScore(capturedPiece);
         }
         this.turn = this.turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
         return this.endOfGame();
@@ -40,12 +35,7 @@ export default class LeapFrog {
         if(path.length - 1 > move.length) {
             return false;
         }
-        for (let i = 1; i < path.length; i++) {
-            if(!path[i].equals(move[i - 1])) {
-                return false;
-            }
-        }
-        return true;
+        return path.slice(1).every((c, i) => c.equals(move[i]));
     }
     endOfGame() {
         return this.endOfGameStrategy.condition();

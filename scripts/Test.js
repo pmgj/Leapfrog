@@ -1,6 +1,6 @@
+import Traditional from "../games/Traditional.js";
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
-import LeapFrog from "./LeapFrog.js";
 import Winner from "./Winner.js";
 
 class Test {
@@ -13,7 +13,7 @@ class Test {
             [CellState.PIECE1, CellState.PIECE1, CellState.EMPTY, CellState.PIECE1, CellState.EMPTY, CellState.PIECE1],
             [CellState.PIECE1, CellState.PIECE1, CellState.PIECE1, CellState.PIECE1, CellState.PIECE1, CellState.PIECE1]
         ];
-        let k = new LeapFrog(6, 6), w;
+        let k = new Traditional(6, 6), w;
         k.setBoard(board);
         // let p = k.possibleMoves(new Cell(0, 4));
         w = k.move([new Cell(0, 4), new Cell(0, 2), new Cell(0, 0), new Cell(2, 0)]);
