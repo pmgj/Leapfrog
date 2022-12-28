@@ -13,6 +13,10 @@
     text-align: center;
 }
 
+#board td.selected {
+    border-color: pink;
+}
+
 #board td,
 img {
     --cell-size: 8vmin;

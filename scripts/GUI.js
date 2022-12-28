@@ -39,6 +39,7 @@ class GUI {
     }
     play(evt) {
         let td = evt.currentTarget;
+        td.className = "selected";
         let cell = this.coordinates(td);
         if (this.path.length > 0 && this.path[this.path.length - 1].equals(cell)) {
             this.endPath();
@@ -75,6 +76,7 @@ class GUI {
             this.setMessage(ex.message);
         }
         this.path = [];
+        document.querySelectorAll(".selected").forEach(td => td.className = "");
     }
     updateScore() {
         let td = document.querySelectorAll("#score tbody td");
