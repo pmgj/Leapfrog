@@ -7,17 +7,10 @@ export default class HighestScore {
         this.game = c;
     }
     condition() {
-        if (this.game.canPlay(CellState.PIECE1)) {
-            return Winner.NONE;
-        }
-        if (this.game.canPlay(CellState.PIECE2)) {
-            return Winner.NONE;
-        }
-        if (this.game.canPlay(CellState.PIECE3)) {
-            return Winner.NONE;
-        }
-        if (this.game.canPlay(CellState.PIECE4)) {
-            return Winner.NONE;
+        for(let cs of Object.keys(CellState).slice(0, -1)) {
+            if (this.game.canPlay(cs)) {
+                return Winner.NONE;
+            }    
         }
         let p1 = this.game.scores[Player.PLAYER1];
         let p2 = this.game.scores[Player.PLAYER2];
