@@ -3,7 +3,10 @@ import Player from "./Player.js";
 import Cell from "./Cell.js";
 
 export default class LeapFrog {
-    constructor(rows, cols) {
+    constructor(name) {
+        this.name = name;
+    }
+    initialize(rows, cols) {
         this.rows = rows;
         this.cols = cols;
         this.turn = Player.PLAYER1;
@@ -93,5 +96,8 @@ export default class LeapFrog {
     onBoard({ x, y }) {
         let inLimit = (value, limit) => value >= 0 && value < limit;
         return inLimit(x, this.rows) && inLimit(y, this.cols);
+    }
+    toString() {
+        return this.name;
     }
 }

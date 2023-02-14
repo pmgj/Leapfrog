@@ -1,23 +1,38 @@
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
-import Murray from "./games/Murray.js";
+import Murray from "./games/Murray.js"
+import Traditional from "./games/Traditional.js"
 
 class GUI {
     constructor() {
         this.game = null;
         this.path = [];
+        this.rules = [new Murray(), new Traditional()];
     }
-    init() {
+    start() {
         let iSize = document.getElementById("size");
-        let iStart = document.getElementById("start");
-        iSize.onchange = this.init.bind(this);
-        iStart.onclick = this.init.bind(this);
         let size = iSize.valueAsNumber;
-        this.game = new Murray(size, size);
+        let option = document.querySelector("#rules").selectedIndex;
+        this.game = this.rules[option];
+        this.game.initialize(size, size);
         let board = this.game.getBoard();
         this.printBoard(board);
         this.changeMessage();
         this.updateScore();
+    }
+    init() {
+        let rules = document.querySelector("#rules");
+        for (let r of this.rules) {
+            let option = document.createElement("option");
+            option.text = r;
+            rules.add(option);
+        }
+        let iSize = document.getElementById("size");
+        let iStart = document.getElementById("start");
+        rules.onchange = this.start.bind(this);
+        iSize.onchange = this.start.bind(this);
+        iStart.onclick = this.start.bind(this);
+        this.start();
     }
     printBoard(board) {
         let tbody = document.querySelector("#board tbody");
