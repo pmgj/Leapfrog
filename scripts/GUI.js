@@ -44,7 +44,7 @@ class GUI {
                 let td = document.createElement("td");
                 if (board[i][j] !== CellState.EMPTY) {
                     let img = document.createElement("img");
-                    img.src = `../images/${board[i][j]}.svg`;
+                    img.src = `images/${board[i][j]}.svg`;
                     td.appendChild(img);
                 }
                 td.onclick = this.play.bind(this);
