@@ -1,4 +1,4 @@
-import LeapFrog from "../Leapfrog.js";
+import LeapFrog from "../LeapFrog.js";
 import FourThreeTwoOnePoints from "../updateScores/FourThreeTwoOnePoints.js";
 import HighestScore from "../endOfGame/HighestScore.js";
 import MurrayBoard from "../boards/MurrayBoard.js";

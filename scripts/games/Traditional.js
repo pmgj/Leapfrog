@@ -1,5 +1,5 @@
 import TraditionalBoard from "../boards/TraditionalBoard.js";
-import LeapFrog from "../Leapfrog.js";
+import LeapFrog from "../LeapFrog.js";
 import SumNumberOfPieces from "../updateScores/SumNumberOfPieces.js";
 import HighestPiece from "../endOfGame/HighestPiece.js";
 
