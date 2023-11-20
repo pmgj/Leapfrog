@@ -1,20 +1,25 @@
 package model.endOfGame;
 
+import java.util.Arrays;
+
 import model.CellState;
 import model.LeapFrog;
 import model.Player;
 import model.Winner;
 
-public class HighestPiece implements EndOfGameStrategy {
+public class HighestScore implements EndOfGameStrategy {
     private LeapFrog game;
 
-    public HighestPiece(LeapFrog c) {
+    public HighestScore(LeapFrog c) {
         this.game = c;
     }
 
     public Winner condition() {
-        if (this.game.canPlay(CellState.PIECE1)) {
-            return Winner.NONE;
+        CellState[] temp = Arrays.copyOf(CellState.values(), CellState.values().length - 1);
+        for (CellState cs : temp) {
+            if (this.game.canPlay(cs)) {
+                return Winner.NONE;
+            }
         }
         int p1 = this.game.getScores().get(Player.PLAYER1);
         int p2 = this.game.getScores().get(Player.PLAYER2);

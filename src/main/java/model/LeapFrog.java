@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 import model.endOfGame.EndOfGameStrategy;
+import model.updateScores.UpdateScores;
 
 public class LeapFrog {
     private String name;
@@ -13,8 +14,9 @@ public class LeapFrog {
     private int cols;
     private Player turn;
     private Map<Player, Integer> scores;
-    private CellState[][] board;
-    private EndOfGameStrategy endOfGameStrategy;
+    protected CellState[][] board;
+    protected EndOfGameStrategy endOfGameStrategy;
+    protected UpdateScores updateScoresStrategy;
 
     public LeapFrog(String name) {
         this.name = name;
@@ -43,7 +45,7 @@ public class LeapFrog {
         return this.endOfGameStrategy.condition();
     }
 
-    private boolean containsSequence(List<CellState> path, List<CellState> move) {
+    private boolean containsSequence(List<Cell> path, List<Cell> move) {
         if (path.size() - 1 > move.size()) {
             return false;
         }
@@ -103,6 +105,44 @@ public class LeapFrog {
             }
         }
         return coords;
+    }
+
+    public Winner move(List<Cell> path) throws Exception {
+        Cell beginCell = path.get(0);
+        Cell endCell = path.get(path.size() - 1);
+        if (path.stream().anyMatch(c -> !(c instanceof Cell) || !this.onBoard(c))) {
+            throw new Exception("Path is invalid.");
+        }
+        List<List<Cell>> pm = this.possibleMoves(beginCell);
+        if (!pm.stream().anyMatch(p -> this.containsSequence(path, p))) {
+            throw new Exception("Invalid move.");
+        }
+        this.board[endCell.x()][endCell.y()] = this.board[beginCell.x()][beginCell.y()];
+        this.board[beginCell.x()][beginCell.y()] = CellState.EMPTY;
+        for (int i = 1; i < path.size(); i++) {
+            int or = path.get(i - 1).x(), oc = path.get(i - 1).y();
+            int dr = path.get(i).x(), dc = path.get(i).y();
+            CellState capturedPiece = this.board[(or + dr) / 2][(oc + dc) / 2];
+            this.board[(or + dr) / 2][(oc + dc) / 2] = CellState.EMPTY;
+            this.updateScoresStrategy.updateScore(capturedPiece);
+        }
+        this.turn = this.turn == Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
+        return this.endOfGame();
+    }
+
+    public boolean canPlay(CellState player) {
+        for (int i = 0; i < this.rows; i++) {
+            for (int j = 0; j < this.cols; j++) {
+                CellState piece = this.board[i][j];
+                if (piece == player) {
+                    List<List<Cell>> pm = this.possibleMoves(new Cell(i, j));
+                    if (pm.size() > 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private record InnerObj(Cell op, Cell empty) {
