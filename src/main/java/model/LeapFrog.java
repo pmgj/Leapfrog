@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -26,7 +27,9 @@ public class LeapFrog {
         this.rows = rows;
         this.cols = cols;
         this.turn = Player.PLAYER1;
-        this.scores = Map.of(Player.PLAYER1, 0, Player.PLAYER2, 0);
+        this.scores = new HashMap<>();
+        this.scores.put(Player.PLAYER1, 0);
+        this.scores.put(Player.PLAYER2, 0);
     }
 
     public Map<Player, Integer> getScores() {
