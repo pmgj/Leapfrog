@@ -21,20 +21,15 @@ public class Test {
         Scanner sc = new Scanner(System.in);
         LeapFrog game = null;
         int option;
+        List<LeapFrog> rules = List.of(new Traditional(), new Murray());
         do {
-            System.out.print("Qual regra você quer jogar (0 - Tradicional, 1 - Murray)? ");
-            option = sc.nextInt();
-            switch (option) {
-                case 0:
-                    game = new Traditional();
-                    break;
-                case 1:
-                    game = new Murray();
-                    break;
-                default:
-                    break;
+            for (int i = 0; i < rules.size(); i++) {
+                System.out.println(String.format("%d) %s", i, rules.get(i)));
             }
-        } while (option != 0 && option != 1);
+            System.out.print("Qual regra você quer jogar? ");
+            option = sc.nextInt();
+        } while (option < 0 || option > rules.size());
+        game = rules.get(option);
         game.initialize(6, 6);
         Winner winner = Winner.NONE;
         Consumer<LeapFrog> printBoard = (g) -> {
