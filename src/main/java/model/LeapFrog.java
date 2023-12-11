@@ -1,13 +1,11 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-
-import model.endOfGame.EndOfGameStrategy;
-import model.updateScores.UpdateScores;
 
 public class LeapFrog {
     private String name;
@@ -16,8 +14,6 @@ public class LeapFrog {
     private Player turn;
     private Map<Player, Integer> scores;
     protected CellState[][] board;
-    protected EndOfGameStrategy endOfGameStrategy;
-    protected UpdateScores updateScoresStrategy;
 
     public LeapFrog(String name) {
         this.name = name;
@@ -45,7 +41,21 @@ public class LeapFrog {
     }
 
     public Winner endOfGame() {
-        return this.endOfGameStrategy.condition();
+        CellState[] temp = Arrays.copyOf(CellState.values(), CellState.values().length - 1);
+        for (CellState cs : temp) {
+            if (this.canPlay(cs)) {
+                return Winner.NONE;
+            }
+        }
+        int p1 = this.getScores().get(Player.PLAYER1);
+        int p2 = this.getScores().get(Player.PLAYER2);
+        if (p1 > p2) {
+            return Winner.PLAYER1;
+        }
+        if (p1 < p2) {
+            return Winner.PLAYER2;
+        }
+        return Winner.DRAW;
     }
 
     private boolean containsSequence(List<Cell> path, List<Cell> move) {
@@ -127,10 +137,16 @@ public class LeapFrog {
             int dr = path.get(i).x(), dc = path.get(i).y();
             CellState capturedPiece = this.board[(or + dr) / 2][(oc + dc) / 2];
             this.board[(or + dr) / 2][(oc + dc) / 2] = CellState.EMPTY;
-            this.updateScoresStrategy.updateScore(capturedPiece);
+            this.updateScore(capturedPiece);
         }
         this.turn = this.turn == Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
         return this.endOfGame();
+    }
+
+    private void updateScore(CellState capturedPiece) {
+        int points = capturedPiece.ordinal() + 1;
+        int old = this.scores.get(this.turn);
+        this.scores.put(this.turn, old + points);
     }
 
     public boolean canPlay(CellState player) {
