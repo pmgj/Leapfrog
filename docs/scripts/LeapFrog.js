@@ -4,14 +4,19 @@ import Cell from "./Cell.js";
 import Winner from "./Winner.js";
 
 export default class LeapFrog {
+    #ROWS
+    #COLS
+    #turn
+    #scores
+    #name
     constructor(name) {
-        this.name = name;
+        this.#name = name;
     }
     initialize(rows, cols) {
-        this.rows = rows;
-        this.cols = cols;
-        this.turn = Player.PLAYER1;
-        this.scores = { "PLAYER1": 0, "PLAYER2": 0 };
+        this.#ROWS = rows;
+        this.#COLS = cols;
+        this.#turn = Player.PLAYER1;
+        this.#scores = new Map([[Player.PLAYER1, 0], [Player.PLAYER2, 0]]);
     }
     move(path) {
         let beginCell = path[0];
@@ -19,8 +24,8 @@ export default class LeapFrog {
         if (path.some(c => !(c instanceof Cell) || !this.onBoard(c))) {
             throw new Error("Path is invalid.");
         }
-        let pm = this.possibleMoves(beginCell);
-        if (!pm.some(p => this.containsSequence(path, p))) {
+        let pm = this.#possibleMoves(beginCell);
+        if (!pm.some(p => this.#containsSequence(path, p))) {
             throw new Error("Invalid move.");
         }
         this.board[endCell.x][endCell.y] = this.board[beginCell.x][beginCell.y];
@@ -30,29 +35,29 @@ export default class LeapFrog {
             const { x: dr, y: dc } = path[i];
             let capturedPiece = this.board[(or + dr) / 2][(oc + dc) / 2];
             this.board[(or + dr) / 2][(oc + dc) / 2] = CellState.EMPTY;
-            this.updateScore(capturedPiece);
+            this.#updateScore(capturedPiece);
         }
-        this.turn = this.turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
-        return this.endOfGame();
+        this.#turn = this.#turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
+        return this.#endOfGame();
     }
-    updateScore(capturedPiece) {
+    #updateScore(capturedPiece) {
         let points = Object.keys(CellState).indexOf(capturedPiece) + 1;
-        this.scores[this.turn] += points;
+        this.#scores.set(this.#turn, this.#scores.get(this.#turn) + points);
     }
-    containsSequence(path, move) {
+    #containsSequence(path, move) {
         if (path.length - 1 > move.length) {
             return false;
         }
         return path.slice(1).every((c, i) => c.equals(move[i]));
     }
-    endOfGame() {
+    #endOfGame() {
         for (let cs of Object.keys(CellState).slice(0, -1)) {
-            if (this.canPlay(cs)) {
+            if (this.#canPlay(cs)) {
                 return Winner.NONE;
             }
         }
-        let p1 = this.scores[Player.PLAYER1];
-        let p2 = this.scores[Player.PLAYER2];
+        let p1 = this.#scores.get(Player.PLAYER1);
+        let p2 = this.#scores.get(Player.PLAYER2);
         if (p1 > p2) {
             return Winner.PLAYER1;
         }
@@ -61,12 +66,12 @@ export default class LeapFrog {
         }
         return Winner.DRAW;
     }
-    canPlay(player) {
-        for (let i = 0; i < this.rows; i++) {
-            for (let j = 0; j < this.cols; j++) {
+    #canPlay(player) {
+        for (let i = 0; i < this.#ROWS; i++) {
+            for (let j = 0; j < this.#COLS; j++) {
                 let piece = this.board[i][j];
                 if (piece === player) {
-                    let pm = this.possibleMoves(new Cell(i, j));
+                    let pm = this.#possibleMoves(new Cell(i, j));
                     if (pm.length > 0) {
                         return true;
                     }
@@ -75,7 +80,7 @@ export default class LeapFrog {
         }
         return false;
     }
-    possibleMoves(beginCell, visitedCells = []) {
+    #possibleMoves(beginCell, visitedCells = []) {
         let coords = [];
         let { x: i, y: j } = beginCell;
         let cells = [{ op: new Cell(i - 1, j), empty: new Cell(i - 2, j) }, { op: new Cell(i, j - 1), empty: new Cell(i, j - 2) }, { op: new Cell(i, j + 1), empty: new Cell(i, j + 2) }, { op: new Cell(i + 1, j), empty: new Cell(i + 2, j) }];
@@ -85,7 +90,7 @@ export default class LeapFrog {
             let { x: a, y: b } = empty;
             if (this.onBoard(op) && this.onBoard(empty) && this.board[c][d] !== CellState.EMPTY && this.board[a][b] === CellState.EMPTY && !visitedCells.find(c => c.equals(empty))) {
                 visitedCells.push(beginCell);
-                let p = this.possibleMoves(empty, visitedCells);
+                let p = this.#possibleMoves(empty, visitedCells);
                 if (p.length !== 0) {
                     p.forEach(v => v.unshift(empty));
                     coords.push(...p);
@@ -99,23 +104,23 @@ export default class LeapFrog {
     }
     setBoard(matrix) {
         this.board = matrix;
-        this.rows = this.board.length;
-        this.cols = this.board[0].length;
+        this.#ROWS = this.board.length;
+        this.#COLS = this.board[0].length;
     }
     getBoard() {
         return this.board;
     }
     getTurn() {
-        return this.turn;
+        return this.#turn;
     }
     getScores() {
-        return this.scores;
+        return this.#scores;
     }
     onBoard({ x, y }) {
         let inLimit = (value, limit) => value >= 0 && value < limit;
-        return inLimit(x, this.rows) && inLimit(y, this.cols);
+        return inLimit(x, this.#ROWS) && inLimit(y, this.#COLS);
     }
     toString() {
-        return this.name;
+        return this.#name;
     }
 }

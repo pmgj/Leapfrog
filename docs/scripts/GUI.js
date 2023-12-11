@@ -1,5 +1,6 @@
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
+import Player from "./Player.js";
 import Murray from "./games/Murray.js"
 import Traditional from "./games/Traditional.js"
 
@@ -96,10 +97,8 @@ class GUI {
     updateScore() {
         let td = document.querySelectorAll("#score tbody td");
         let scores = this.game.getScores();
-        let values = Object.values(scores);
-        for (let i = 0; i < values.length; i++) {
-            td[i].textContent = values[i];
-        }
+        td[0].textContent = scores.get(Player.PLAYER1);
+        td[1].textContent = scores.get(Player.PLAYER2);
     }
     coordinates(cell) {
         return new Cell(cell.parentNode.rowIndex, cell.cellIndex);
