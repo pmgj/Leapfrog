@@ -1,6 +1,5 @@
 import TraditionalBoard from "../boards/TraditionalBoard.js";
 import LeapFrog from "../LeapFrog.js";
-import HighestPiece from "../endOfGame/HighestPiece.js";
 
 export default class Traditional extends LeapFrog {
     constructor() {
@@ -9,6 +8,5 @@ export default class Traditional extends LeapFrog {
     initialize(rows, cols) {
         super.initialize(rows, cols);
         this.board = new TraditionalBoard().createBoard(rows, cols);
-        this.endOfGameStrategy = new HighestPiece(this);
     }
 }

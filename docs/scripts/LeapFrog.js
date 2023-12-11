@@ -1,6 +1,7 @@
 import CellState from "./CellState.js";
 import Player from "./Player.js";
 import Cell from "./Cell.js";
+import Winner from "./Winner.js";
 
 export default class LeapFrog {
     constructor(name) {
@@ -45,7 +46,20 @@ export default class LeapFrog {
         return path.slice(1).every((c, i) => c.equals(move[i]));
     }
     endOfGame() {
-        return this.endOfGameStrategy.condition();
+        for (let cs of Object.keys(CellState).slice(0, -1)) {
+            if (this.canPlay(cs)) {
+                return Winner.NONE;
+            }
+        }
+        let p1 = this.scores[Player.PLAYER1];
+        let p2 = this.scores[Player.PLAYER2];
+        if (p1 > p2) {
+            return Winner.PLAYER1;
+        }
+        if (p1 < p2) {
+            return Winner.PLAYER2;
+        }
+        return Winner.DRAW;
     }
     canPlay(player) {
         for (let i = 0; i < this.rows; i++) {
