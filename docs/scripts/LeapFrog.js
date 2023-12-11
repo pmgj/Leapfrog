@@ -29,13 +29,17 @@ export default class LeapFrog {
             const { x: dr, y: dc } = path[i];
             let capturedPiece = this.board[(or + dr) / 2][(oc + dc) / 2];
             this.board[(or + dr) / 2][(oc + dc) / 2] = CellState.EMPTY;
-            this.updateScoresStrategy.updateScore(capturedPiece);
+            this.updateScore(capturedPiece);
         }
         this.turn = this.turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
         return this.endOfGame();
     }
+    updateScore(capturedPiece) {
+        let points = Object.keys(CellState).indexOf(capturedPiece) + 1;
+        this.scores[this.turn] += points;
+    }
     containsSequence(path, move) {
-        if(path.length - 1 > move.length) {
+        if (path.length - 1 > move.length) {
             return false;
         }
         return path.slice(1).every((c, i) => c.equals(move[i]));
