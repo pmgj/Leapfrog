@@ -21,7 +21,7 @@ export default class LeapFrog {
     move(path) {
         let beginCell = path[0];
         let endCell = path[path.length - 1];
-        if (path.some(c => !(c instanceof Cell) || !this.onBoard(c))) {
+        if (path.some(c => !this.#onBoard(c))) {
             throw new Error("Path is invalid.");
         }
         let pm = this.#possibleMoves(beginCell);
@@ -88,7 +88,7 @@ export default class LeapFrog {
             let { op, empty } = obj;
             let { x: c, y: d } = op;
             let { x: a, y: b } = empty;
-            if (this.onBoard(op) && this.onBoard(empty) && this.board[c][d] !== CellState.EMPTY && this.board[a][b] === CellState.EMPTY && !visitedCells.find(c => c.equals(empty))) {
+            if (this.#onBoard(op) && this.#onBoard(empty) && this.board[c][d] !== CellState.EMPTY && this.board[a][b] === CellState.EMPTY && !visitedCells.find(c => c.equals(empty))) {
                 visitedCells.push(beginCell);
                 let p = this.#possibleMoves(empty, visitedCells);
                 if (p.length !== 0) {
@@ -102,11 +102,6 @@ export default class LeapFrog {
         }
         return coords;
     }
-    setBoard(matrix) {
-        this.board = matrix;
-        this.#ROWS = this.board.length;
-        this.#COLS = this.board[0].length;
-    }
     getBoard() {
         return this.board;
     }
@@ -116,7 +111,7 @@ export default class LeapFrog {
     getScores() {
         return this.#scores;
     }
-    onBoard({ x, y }) {
+    #onBoard({ x, y }) {
         let inLimit = (value, limit) => value >= 0 && value < limit;
         return inLimit(x, this.#ROWS) && inLimit(y, this.#COLS);
     }
