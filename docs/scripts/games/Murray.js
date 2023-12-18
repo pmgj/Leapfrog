@@ -1,5 +1,8 @@
 import LeapFrog from "../LeapFrog.js";
 import MurrayBoard from "../boards/MurrayBoard.js";
+import NoMoveHigherScore from "../endOfGame/NoMoveHigherScore.js";
+import OrthogonalMoves from "../possibleMoves/OrthogonalMoves.js";
+import IncreaseByCapture from "../updateScore/IncreaseByCapture.js";
 
 export default class Murray extends LeapFrog {
     constructor() {
@@ -8,5 +11,8 @@ export default class Murray extends LeapFrog {
     initialize(rows, cols) {
         super.initialize(rows, cols);
         this.board = new MurrayBoard().createBoard(rows, cols);
+        this.possibleMoves = new OrthogonalMoves(this);
+        this.updateScore = new IncreaseByCapture();
+        this.endOfGame = new NoMoveHigherScore(this);
     }
 }

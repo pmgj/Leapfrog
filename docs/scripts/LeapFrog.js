@@ -11,6 +11,9 @@ export default class LeapFrog {
     #name
     constructor(name) {
         this.#name = name;
+        this.board = null;
+        this.possibleMoves = null;
+        this.endOfGame = null;
     }
     initialize(rows, cols) {
         this.#ROWS = rows;
@@ -21,10 +24,10 @@ export default class LeapFrog {
     move(path) {
         let beginCell = path[0];
         let endCell = path[path.length - 1];
-        if (path.some(c => !this.#onBoard(c))) {
+        if (path.some(c => !this.onBoard(c))) {
             throw new Error("Path is invalid.");
         }
-        let pm = this.#possibleMoves(beginCell);
+        let pm = this.possibleMoves.compute(beginCell);
         if (!pm.some(p => this.#containsSequence(path, p))) {
             throw new Error("Invalid move.");
         }
@@ -35,14 +38,10 @@ export default class LeapFrog {
             const { x: dr, y: dc } = path[i];
             let capturedPiece = this.board[(or + dr) / 2][(oc + dc) / 2];
             this.board[(or + dr) / 2][(oc + dc) / 2] = CellState.EMPTY;
-            this.#updateScore(capturedPiece);
+            this.updateScore.compute(capturedPiece);
         }
         this.#turn = this.#turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
-        return this.#endOfGame();
-    }
-    #updateScore(capturedPiece) {
-        let points = Object.keys(CellState).indexOf(capturedPiece) + 1;
-        this.#scores.set(this.#turn, this.#scores.get(this.#turn) + points);
+        return this.endOfGame.compute();
     }
     #containsSequence(path, move) {
         if (path.length - 1 > move.length) {
@@ -50,28 +49,12 @@ export default class LeapFrog {
         }
         return path.slice(1).every((c, i) => c.equals(move[i]));
     }
-    #endOfGame() {
-        for (let cs of Object.keys(CellState).slice(0, -1)) {
-            if (this.#canPlay(cs)) {
-                return Winner.NONE;
-            }
-        }
-        let p1 = this.#scores.get(Player.PLAYER1);
-        let p2 = this.#scores.get(Player.PLAYER2);
-        if (p1 > p2) {
-            return Winner.PLAYER1;
-        }
-        if (p1 < p2) {
-            return Winner.PLAYER2;
-        }
-        return Winner.DRAW;
-    }
-    #canPlay(player) {
+    canPlay(player) {
         for (let i = 0; i < this.#ROWS; i++) {
             for (let j = 0; j < this.#COLS; j++) {
                 let piece = this.board[i][j];
                 if (piece === player) {
-                    let pm = this.#possibleMoves(new Cell(i, j));
+                    let pm = this.possibleMoves.compute(new Cell(i, j));
                     if (pm.length > 0) {
                         return true;
                     }
@@ -79,28 +62,6 @@ export default class LeapFrog {
             }
         }
         return false;
-    }
-    #possibleMoves(beginCell, visitedCells = []) {
-        let coords = [];
-        let { x: i, y: j } = beginCell;
-        let cells = [{ op: new Cell(i - 1, j), empty: new Cell(i - 2, j) }, { op: new Cell(i, j - 1), empty: new Cell(i, j - 2) }, { op: new Cell(i, j + 1), empty: new Cell(i, j + 2) }, { op: new Cell(i + 1, j), empty: new Cell(i + 2, j) }];
-        for (let obj of cells) {
-            let { op, empty } = obj;
-            let { x: c, y: d } = op;
-            let { x: a, y: b } = empty;
-            if (this.#onBoard(op) && this.#onBoard(empty) && this.board[c][d] !== CellState.EMPTY && this.board[a][b] === CellState.EMPTY && !visitedCells.find(c => c.equals(empty))) {
-                visitedCells.push(beginCell);
-                let p = this.#possibleMoves(empty, visitedCells);
-                if (p.length !== 0) {
-                    p.forEach(v => v.unshift(empty));
-                    coords.push(...p);
-                } else {
-                    coords.push([empty]);
-                }
-                visitedCells.pop();
-            }
-        }
-        return coords;
     }
     getBoard() {
         return this.board;
@@ -111,7 +72,7 @@ export default class LeapFrog {
     getScores() {
         return this.#scores;
     }
-    #onBoard({ x, y }) {
+    onBoard({ x, y }) {
         let inLimit = (value, limit) => value >= 0 && value < limit;
         return inLimit(x, this.#ROWS) && inLimit(y, this.#COLS);
     }

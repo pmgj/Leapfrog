@@ -1,6 +1,7 @@
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
 import Player from "./Player.js";
+import Konane from "./games/Konane.js";
 import Murray from "./games/Murray.js"
 import Traditional from "./games/Traditional.js"
 
@@ -11,7 +12,7 @@ class GUI {
     constructor() {
         this.#game = null;
         this.#path = [];
-        this.#rules = [new Murray(), new Traditional()];
+        this.#rules = [new Konane(), new Murray(), new Traditional()];
     }
     #start() {
         let iSize = document.getElementById("size");
