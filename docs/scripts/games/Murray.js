@@ -12,7 +12,7 @@ export default class Murray extends LeapFrog {
         super.initialize(rows, cols);
         this.board = new MurrayBoard().createBoard(rows, cols);
         this.possibleMoves = new OrthogonalMoves(this);
-        this.updateScore = new IncreaseByCapture();
+        this.updateScore = new IncreaseByCapture(this);
         this.endOfGame = new NoMoveHigherScore(this);
     }
 }

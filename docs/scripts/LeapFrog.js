@@ -1,7 +1,6 @@
 import CellState from "./CellState.js";
 import Player from "./Player.js";
 import Cell from "./Cell.js";
-import Winner from "./Winner.js";
 
 export default class LeapFrog {
     #ROWS

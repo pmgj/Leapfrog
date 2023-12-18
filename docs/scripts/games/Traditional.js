@@ -12,7 +12,7 @@ export default class Traditional extends LeapFrog {
         super.initialize(rows, cols);
         this.board = new TraditionalBoard().createBoard(rows, cols);
         this.possibleMoves = new OrthogonalMoves(this);
-        this.updateScore = new IncreaseByCapture();
+        this.updateScore = new IncreaseByCapture(this);
         this.endOfGame = new NoMoveHigherScore(this);
     }
 }

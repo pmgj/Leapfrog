@@ -20,10 +20,16 @@ class GUI {
         let option = document.querySelector("#rules").selectedIndex;
         this.#game = this.#rules[option];
         this.#game.initialize(size, size);
-        let board = this.#game.getBoard();
-        this.#printBoard(board);
+        this.#updateTitle(this.#game.toString());
+        this.#printBoard(this.#game.getBoard());
         this.#changeMessage();
         this.#updateScore();
+    }
+    #updateTitle(msg) {
+        let caption = document.querySelector("#board caption");
+        caption.textContent = msg;
+        let title = document.querySelector("head title");
+        title.textContent = msg;
     }
     init() {
         let rules = document.querySelector("#rules");
