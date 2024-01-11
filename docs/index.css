@@ -1,6 +1,15 @@
-#board caption {
+.caption-top {
     font-weight: bold;
     font-size: xx-large;
+    color: black;
+}
+
+.container-sm {
+    max-width: 300px;
+}
+
+#board {
+    border-collapse: separate;
 }
 
 #board,
@@ -10,6 +19,7 @@
 
 #board td {
     border: 3px solid black;
+    padding: 3px;
     text-align: center;
 }
 
@@ -28,14 +38,18 @@ p {
     text-align: center;
 }
 
-input {
-    width: 50px;
+input[type="number"] {
+    max-width: 70px;
 }
 
 img {
     vertical-align: middle;
     position: relative;
     animation-fill-mode: backwards;
+}
+
+#score {
+    max-width: 200px;
 }
 
 #score caption {
